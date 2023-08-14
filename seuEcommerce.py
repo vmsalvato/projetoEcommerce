@@ -1,4 +1,4 @@
-from flask import Flask, make_response, Response
+from flask import Flask, make_response, Response, render_template_string
 from markupsafe import escape
 from flask import render_template
 from flask import request
@@ -6,12 +6,15 @@ import mysql.connector
 from flask_sqlalchemy import SQLAlchemy
 from flask import redirect
 from flask import url_for
+from sqlalchemy import ForeignKey
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://testeuser:bancoteste2@localhost:3306/seuecommerce"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+
+### TABELA USUARIOS
 
 class Usuario(db.Model):
     id = db.Column('IDUSUARIO', db.Integer, primary_key=True)
@@ -28,10 +31,62 @@ class Usuario(db.Model):
         self.sexo = sexo
         self.senha = senha
 
+### TABELA CATEGORIAS
+
+class Categoria(db.Model):
+    __tablename__ = "categoria"
+    id = db.Column('cat_id', db.Integer, primary_key=True)
+    nome = db.Column('cat_nome', db.String(256))
+    desc = db.Column('cat_desc', db.String(256))
+
+    def __init__ (self, nome, desc):
+        self.nome = nome
+        self.desc = desc
+
+### TABELA PERGUNTAS
+
+class Pergunta(db.Model):
+    __tablename__ = "pergunta"
+    id = db.Column('pergunta_id', db.Integer, primary_key=True)
+    texto = db.Column('texto_pergunta', db.String(256))
+    anuncio_id = db.Column('anuncio_id',db.Integer, db.ForeignKey("anuncio.anuncio_id"))
+
+    def __init__ (self, texto, anuncio_id):
+        self.texto = texto
+        self.anuncio_id = anuncio_id
+
+### TABELA ANUNCIO
+
+class Anuncio(db.Model):
+    __tablename__ = "anuncio"
+    id = db.Column('anu_id', db.Integer, primary_key=True)
+    nome = db.Column('anu_nome', db.String(256))
+    desc = db.Column('anu_desc', db.String(256))
+    qtd = db.Column('anu_qtd', db.Integer)
+    preco = db.Column('anu_preco', db.Float)
+    cat_id = db.Column('cat_id',db.Integer, db.ForeignKey("categoria.cat_id"))
+    usu_id = db.Column('usuario_id',db.Integer, db.ForeignKey("logusuario.usuario_id"))
+
+    def __init__(self, nome, desc, qtd, preco, cat_id, usu_id):
+        self.nome = nome
+        self.desc = desc
+        self.qtd = qtd
+        self.preco = preco
+        self.cat_id = cat_id
+        self.usu_id = usu_id
+
+### TRATAMENTO ERRO
+
+@app.errorhandler(404)
+def paginanaoencontrada(error):
+    return render_template('erro.html')
+
+### INDEX 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+### CRUD USUARIO
 @app.route("/log/usuario")
 def logusuario():
     return render_template("usuario.html", usuarios = Usuario.query.all(), title="Usuário")
@@ -64,7 +119,7 @@ def editarusuario(id):
 
         return redirect(url_for("logusuario"))
     
-    return render_template("alterar.html", usuario = usuario, title="Usuário")
+    return render_template("alterar_usuario.html", usuario = usuario, title="Usuário")
 
 @app.route("/usuario/deletar/<int:id>")
 def deletarusuario(id):
@@ -73,25 +128,79 @@ def deletarusuario(id):
     db.session.commit()
     return redirect(url_for("logusuario"))
 
-@app.route("/anuncio/novo")
-def anuncio():
-    return render_template("anuncio.html")
 
+### CRUD ANUNCIO
+@app.route("/cad/anuncio")
+def anuncio():
+    return render_template('anuncio.html', anuncios = Anuncio.query.all(), categorias = Categoria.query.all(), titulo="Anuncio")
+
+@app.route("/anuncio/criar", methods=['POST'])
+def criaranuncio():
+    anuncio = Anuncio(request.form.get('nome'), request.form.get('desc'),request.form.get('qtd'),request.form.get('preco'),request.form.get('cat'),request.form.get('uso'))
+    db.session.add(anuncio)
+    db.session.commit()
+    return redirect(url_for('anuncio'))
+
+### CRUD PERGUNTA 
 @app.route("/anuncio/pergunta")
 def pergunta():
-    return render_template("pergunta.html")
+    return render_template('pergunta.html', perguntas = Pergunta.query.all(), titulo='Pergunta')
+
+@app.route("/pergunta/criar", methods=['POST'])
+def criarpergunta():
+    pergunta = Pergunta(request.form.get('texto'), request.form.get('anuncio_id'),)
+    db.session.add(pergunta)
+    db.session.commit()
+    return redirect(url_for('pergunta'))
+
+### FAVORITOS
 
 @app.route("/anuncio/favoritos")
 def favoritos():
     return render_template("favoritos.html")
 
-@app.route("/categoria/novo")
+### CRUD CATEGORIA
+
+@app.route("/config/categoria")
 def categoria():
-    return render_template("categoria.html")
+    return render_template('categoria.html', categorias = Categoria.query.all(), titulo='Categoria')
+
+@app.route("/categoria/criar", methods=['POST'])
+def criarcategoria():
+    categoria = Categoria(request.form.get('nome'), request.form.get('desc'))
+    db.session.add(categoria)
+    db.session.commit()
+    return redirect(url_for('categoria'))
+
+@app.route("/categoria/deletar/<int:id>")
+def deletarcategoria(id):
+    categoria = Categoria.query.get(id)
+    db.session.delete(categoria)
+    db.session.commit()
+    return redirect(url_for("categoria"))
+
+@app.route("/categoria/editar/<int:id>", methods=["GET","POST"])
+def editarcategoria(id):
+    categoria = Categoria.query.get(id)
+    if request.method == "POST":
+
+        categoria.nome = request.form.get("nome")
+        categoria.desc = request.form.get("desc")
+
+        db.session.add(categoria)
+        db.session.commit()
+
+        return redirect(url_for("categoria"))
+    
+    return render_template("alterar_categoria.html", categoria = categoria, title="Categoria")
+
+### RELATORIO VENDAS
 
 @app.route("/relatorios/vendas")
 def rel_vendas():
     return render_template("rel_vendas.html")
+
+### RELATORIO COMPRAS
 
 @app.route("/relatorios/compras")
 def rel_compras():

@@ -7,5 +7,37 @@
 </head>
 <body>
     <h1>Perguntas</h1>
+    <form action="/pergunta/criar" method="post">
+        <label for="texto">Texto</label>
+        <input type="text" id="texto" name="texto">
+        <br><br>
+
+        <label for="anuncio_id">Anuncio</label>
+        <select id="anuncio_id" name="anuncio_id">
+            {% for anuncio in anuncuis %} 
+                <option value="{{ anuncio.id }}">{{ anuncio.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <p><input type="submit" value="Cadastrar"></p>
+    </form>
+
+    <h4>Lista de {{titulo}}</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Texto</th>
+                <th>Anúncio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pergunta in perguntas %}
+                <tr>
+                    <td>{{ pergunta.texto }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

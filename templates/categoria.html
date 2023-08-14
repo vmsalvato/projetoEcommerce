@@ -7,5 +7,36 @@
 </head>
 <body>
     <h1>Categoria</h1>
+    <form action="/categoria/criar" method="post">
+        <p><label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome"></p>
+
+        <p><label for="desc">Descricao</label>
+        <input type="text" id="desc" name="desc"></p>       
+
+        <p><input type="submit" value="Cadastrar"></p>
+    </form>
+
+    <h4>Lista de {{titulo}}</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descricao</th>
+                <th>Editar</th>
+                <th>Deletar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.nome }}</td>
+                    <td>{{ categoria.desc }}</td>
+                    <td><a href={{url_for("editarcategoria",id=categoria.id)}}>Alterar</a></td>
+                    <td><a href={{url_for("deletarcategoria",id=categoria.id)}}>Deletar</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>

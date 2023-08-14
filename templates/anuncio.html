@@ -7,5 +7,60 @@
 </head>
 <body>
     <h1>Acompanhe os anúncios!</h1>
+    <form action="/anuncio/criar" method="post">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome">
+        <br><br>
+
+        <label for="desc">Descrição</label>
+        <textarea rows="4" cols="50" id="desc" name="desc"></textarea>
+        <br><br>
+
+        <label for="qtd">Quantidade</label>
+        <input type="text" id="qtd" name="qtd">
+        <br><br>
+
+        <label for="preco">Preço</label>
+        <input type="text" id="preco" name="preco">
+        <br><br>
+
+        <label for="cat">Categoria</label>
+        <select id="cat" name="cat">
+            {% for categoria in categorias %} 
+                <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <p><label for="usu">Usuario</label>
+        <input type="text" id="uso" name="uso"></p>
+        <br><br>
+
+        <p><input type="submit" value="Cadastrar"></p>
+    </form>
+
+    <h4>Lista de {{titulo}}</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Qtd</th>
+                <th>Preco</th>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for anuncio in anuncios %}
+                <tr>
+                    <td>{{ anuncio.nome }}</td>
+                    <td>{{ anuncio.desc }}</td>
+                    <td>{{ anuncio.qtd }}</td>
+                    <td>{{ anuncio.preco }}</td>
+                    <td>{{ anuncio.cat_id }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
