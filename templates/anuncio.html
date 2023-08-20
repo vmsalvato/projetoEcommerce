@@ -3,64 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
     <title>seuEcommerce - Lugar de comprar barato</title>
 </head>
 <body>
-    <h1>Acompanhe os anúncios!</h1>
-    <form action="/anuncio/criar" method="post">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome">
-        <br><br>
-
-        <label for="desc">Descrição</label>
-        <textarea rows="4" cols="50" id="desc" name="desc"></textarea>
-        <br><br>
-
-        <label for="qtd">Quantidade</label>
-        <input type="text" id="qtd" name="qtd">
-        <br><br>
-
-        <label for="preco">Preço</label>
-        <input type="text" id="preco" name="preco">
-        <br><br>
-
-        <label for="cat">Categoria</label>
-        <select id="cat" name="cat">
-            {% for categoria in categorias %} 
-                <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
-
-        <p><label for="usu">Usuario</label>
-        <input type="text" id="uso" name="uso"></p>
-        <br><br>
-
-        <p><input type="submit" value="Cadastrar"></p>
-    </form>
-
-    <h4>Lista de {{titulo}}</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Qtd</th>
-                <th>Preco</th>
-                <th>Categoria</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for anuncio in anuncios %}
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h1>Crie {{titulo}}</h1>
+        </div>
+        <form action="/anuncio/criar" method="post">
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="desc">Descrição</label>
+                <input class="form-control" id="desc" name="desc" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="qtd">Quantidade</label>
+                <input type="text" class="form-control" id="qtd" name="qtd" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="imagem">Imagem</label>
+                <input type="file" class="form-control" name="imagem">
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="preco">Preço</label>
+                <input type="text" class="form-control" id="preco" name="preco" required>
+            </div>
+            <br>
+            <div class="form-select">
+                <label for="cat">Categoria</label>
+                <select class="form-control" id="cat" name="cat">
+                    {% for categoria in categorias %} 
+                        <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="form-select">
+                <label for="usu">Usuário</label>
+                <select class="form-control" id="usu" name="usu">
+                    {% for usuario in usuarios %} 
+                        <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" value="Cadastrar">
+                <a style="margin-left: 10px;" href={{url_for("index")}}>Voltar</a>
+            </div>
+        </form>
+    </div> 
+    <br>
+    <div class="container">
+        <div class="page-header">   
+            <h1>Lista de {{titulo}}</h1>
+        </div>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thread-default">
                 <tr>
-                    <td>{{ anuncio.nome }}</td>
-                    <td>{{ anuncio.desc }}</td>
-                    <td>{{ anuncio.qtd }}</td>
-                    <td>{{ anuncio.preco }}</td>
-                    <td>{{ anuncio.cat_id }}</td>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Quantidade</th>
+                    <th>Imagem</th>
+                    <th>Preço</th>
+                    <th>Categoria</th>
+                    <th>Usuário</th>
+                    <th>Editar</th>
+                    <th>Deletar</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for anuncio in anuncios %}
+                    <tr>
+                        <td>{{ anuncio.nome }}</td>
+                        <td>{{ anuncio.desc }}</td>
+                        <td>{{ anuncio.qtd }}</td>
+                        <td>{{ anuncio.imagem }}</td>
+                        <td>{{ anuncio.preco }}</td>
+                        <td>
+                        {% for categoria in categorias %} 
+                            {% if categoria.id == anuncio.cat_id %}
+                                {{ categoria.nome }}
+                            {% else %}
+                                {{ null }}
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                        <td>
+                        {% for usuario in usuarios %} 
+                            {% if usuario.id == anuncio.usu_id %}
+                                {{ usuario.nome }}
+                            {% else %}
+                                {{ null }}
+                            {% endif %}
+                        {% endfor %}
+                        </td>
+                        <td><a href={{url_for("editaranuncio",id=anuncio.id)}}>Alterar</a></td>
+                        <td><a href={{url_for("deletaranuncio",id=anuncio.id)}}>Deletar</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h2>Categorias</h2>
+        </div>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thread-default">
+                <tr>
+                    <th>Nº Categoria</th>
+                    <th>Nome Categoria</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                    <tr>
+                        <td>{{ categoria.id }}</td>
+                        <td>{{ categoria.nome }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div> 
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h2>Usuários</h2>
+        </div>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thread-default">
+                <tr>
+                    <th>Nº Usuário</th>
+                    <th>Nome Usuário</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.nome }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

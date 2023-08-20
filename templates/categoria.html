@@ -3,40 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
     <title>seuEcommerce - Lugar de comprar barato</title>
 </head>
 <body>
-    <h1>Categoria</h1>
-    <form action="/categoria/criar" method="post">
-        <p><label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome"></p>
-
-        <p><label for="desc">Descricao</label>
-        <input type="text" id="desc" name="desc"></p>       
-
-        <p><input type="submit" value="Cadastrar"></p>
-    </form>
-
-    <h4>Lista de {{titulo}}</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Descricao</th>
-                <th>Editar</th>
-                <th>Deletar</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for categoria in categorias %}
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h1>Categoria</h1>
+        </div>
+        <form action="/categoria/criar" method="post">
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="desc">Descrição</label>
+                <input type="text" class="form-control" id="desc" name="desc" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" value="Cadastrar">
+                <a style="margin-left: 10px;" href={{url_for("index")}}>Voltar</a>
+            </div>    
+        </form>
+    </div>
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h1>Lista de {{titulo}}</h1>
+        </div>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thread-default">
                 <tr>
-                    <td>{{ categoria.nome }}</td>
-                    <td>{{ categoria.desc }}</td>
-                    <td><a href={{url_for("editarcategoria",id=categoria.id)}}>Alterar</a></td>
-                    <td><a href={{url_for("deletarcategoria",id=categoria.id)}}>Deletar</a></td>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Editar</th>
+                    <th>Deletar</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                    <tr>
+                        <td>{{ categoria.nome }}</td>
+                        <td>{{ categoria.desc }}</td>
+                        <td><a href={{url_for("editarcategoria",id=categoria.id)}}>Alterar</a></td>
+                        <td><a href={{url_for("deletarcategoria",id=categoria.id)}}>Deletar</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

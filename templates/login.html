@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <title>seuEcommerce - Lugar de comprar barato</title>
+</head>
+<body>
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h1>Login</h1>
+        </div>
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="text" class="form-control" id="email" name="email" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" class="form-control" id="senha" name="senha" required>
+            </div>
+            <br>
+            <div class="form-group">
+                <input type="submit"  class="btn btn-success" value="Entrar">
+                <a style="margin-left: 10px;" href={{url_for("logusuario")}}>Criar</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

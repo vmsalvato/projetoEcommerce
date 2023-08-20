@@ -12,9 +12,13 @@
         <input type="text" id="texto" name="texto" value="{{pergunta.texto}}">
         <br><br>   
 
+        <label for="anuncio_id">Nº Anúncio</label>
+        <input type="text" id="anuncio_id" name="anuncio_id" value="{{ pergunta.anuncio_id }}">
+        <br><br>  
+
         <p><input type="submit" value="Alterar"></p>
     </form>
     <a href={{url_for("pergunta")}}>Cancelar</a>
-
+    <br><br>
 </body>
 </html>
