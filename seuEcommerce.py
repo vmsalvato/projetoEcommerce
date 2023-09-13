@@ -13,8 +13,8 @@ import hashlib
 #from crypt import methods
 
 app = Flask(__name__)
-#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://testeuser:bancoteste2@localhost:3306/seuecommerce"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://jonasmartins2:bancoteste2@jonasmartins2.mysql.pythonanywhere-services.com:3306/jonasmartins2$seuecommerce"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://testeuser:bancoteste2@localhost:3306/seuecommerce"
+#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://jonasmartins2:bancoteste2@jonasmartins2.mysql.pythonanywhere-services.com:3306/jonasmartins2$seuecommerce"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -79,6 +79,18 @@ class Pergunta(db.Model):
     def __init__ (self, texto, anuncio_id):
         self.texto = texto
         self.anuncio_id = anuncio_id
+
+### RESPOSTA PERGUNTAS
+
+class Resposta(db.Model):
+    __tablename__ = "resposta"
+    id = db.Column('resposta_id', db.Integer, primary_key=True)
+    texto = db.Column('texto_resposta', db.String(256))
+    pergunta_resposta = db.Column('pergunta_resposta', db.String(256))
+
+    def __init__ (self, texto, pergunta_resposta):
+        self.texto = texto
+        self.pergunta_resposta = pergunta_resposta
 
 ### TABELA ANUNCIO
 
@@ -236,7 +248,7 @@ def pergunta():
 
 @app.route("/pergunta/criar", methods=['POST'])
 def criarpergunta():
-    pergunta = Pergunta(request.form.get('texto'), request.form.get('anuncio_id'),)
+    pergunta = Pergunta(request.form.get('texto'), request.form.get('anuncio_id'))
     db.session.add(pergunta)
     db.session.commit()
     return redirect(url_for('pergunta'))
@@ -263,6 +275,26 @@ def editarpergunta(id):
         return redirect(url_for("pergunta"))
     
     return render_template("alterar_pergunta.html", pergunta = pergunta, title="Pergunta")
+
+### CRUD RESPOSTA 
+@app.route("/anuncio/resposta")
+@login_required
+def resposta():
+    return render_template('responder_pergunta.html', perguntas = Pergunta.query.all(), respostas = Resposta.query.all(), anuncios = Anuncio.query.all())
+
+@app.route("/resposta/criar", methods=['POST'])
+def criarresposta():
+    resposta = Resposta(request.form.get('pergunta_anuncio'), request.form.get('texto_resposta'))
+    db.session.add(resposta)
+    db.session.commit()
+    return redirect(url_for('resposta'))
+
+@app.route("/resposta/deletar/<int:id>")
+def deletaresposta(id):
+    resposta = Resposta.query.get(id)
+    db.session.delete(resposta)
+    db.session.commit()
+    return redirect(url_for("resposta"))
 
 ### FAVORITOS
 
