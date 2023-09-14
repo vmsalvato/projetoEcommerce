@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>seuEcommerce - Lugar de comprar barato</title>
+</head>
+<body>
+    <h1>Alterar {{title}}</h1>
+    <form action="/favorito/editar/{{ favorito.id }}" method="POST">
+        <label for="usuario_id">Selecione o Usuário</label>
+        <select class="form-control" id="usuario_id" name="usuario_id">
+            {% for usuario in usuarios %} 
+                <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="anuncio_id">Selecione o Anuncio</label>
+        <select class="form-control" id="anuncio_id" name="anuncio_id">
+            {% for anuncio in anuncios %} 
+                <option value="{{ anuncio.id }}">{{ anuncio.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="avaliacao">Avalie (1 para muito ruim e 5 para muito bom)</label>
+        <select class="form-control" id="avalicao" name="avaliacao">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <br><br>
+        <label for="comentario">Deixe seu comentário</label>
+        <input type="text" class="form-control" id="comentario" name="comentario" value="{{favorito.comentario}}"required>    
+
+        <p><input type="submit" value="Alterar"></p>
+    </form>
+    <a href={{url_for("favoritos")}}>Cancelar</a>
+</body>
+</html>

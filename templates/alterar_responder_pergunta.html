@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>seuEcommerce - Lugar de comprar barato</title>
+</head>
+<body>
+    <h1>Alterar {{title}}</h1>
+    <form action="/resposta/editar/{{ resposta.id }}" method="POST">
+        <label for="usuario_id">Quem está respondendo</label>
+        <select class="form-control" id="usuario_id" name="usuario_id">
+            {% for usuario in usuarios %} 
+                <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="pergunta_anuncio">Selecione o que deseja responder</label>
+        <select class="form-control" id="pergunta_anuncio" name="pergunta_anuncio">
+            {% for anuncio in anuncios %} 
+                {% for pergunta in perguntas %} 
+                    {% if anuncio.id == pergunta.anuncio_id %}
+                        <option>ANÚNCIO: {{anuncio.nome}} | PERGUNTA: {{ pergunta.texto }} </option>
+                    {% else %}
+                        {{ null }}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="texto_resposta">Escreva sua resposta</label>
+            <input type="text" class="form-control" id="texto_resposta" name="texto_resposta" value="{{ resposta.pergunta_resposta }}" required>
+        <br><br>
+
+        <p><input type="submit" value="Alterar"></p>
+    </form>
+    <a href={{url_for("resposta")}}>Cancelar</a>
+</body>
+</html>

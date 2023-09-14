@@ -14,6 +14,15 @@
         </div>
         <form action="/resposta/criar" method="post">
             <div class="form-select">
+                <label for="usuario_id">Quem está respondendo</label>
+                <select class="form-control" id="usuario_id" name="usuario_id">
+                    {% for usuario in usuarios %} 
+                        <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div> 
+            <br>
+            <div class="form-select">
                 <label for="pergunta_anuncio">Selecione o que deseja responder</label>
                 <select class="form-control" id="pergunta_anuncio" name="pergunta_anuncio">
                     {% for anuncio in anuncios %} 
@@ -49,16 +58,28 @@
         <table class="table table-striped table-responsive table-bordered">
             <thead class="thread-default">
                 <tr>
+                    <th>Usuário</th>
                     <th>Pergunta</th>
                     <th>Resposta</th>
+                    <th>Alterar</th>
                     <th>Deletar</th>
                 </tr>
             </thead>
             <tbody>
                 {% for resposta in respostas %}
                     <tr>
+                        <td>
+                            {% for usuario in usuarios %}
+                                {% if resposta.usuario_id == usuario.id %}
+                                    {{ usuario.nome }}
+                                {% else %}
+                                    {{ null }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
                         <td>{{resposta.texto}}</td>
                         <td>{{resposta.pergunta_resposta}}</td>
+                        <td><a href={{url_for("editarresposta",id=resposta.id)}}>Alterar</a></td>
                         <td><a href={{url_for("deletaresposta",id=resposta.id)}}>Deletar</a></td>
                     </tr>
                 {% endfor %}

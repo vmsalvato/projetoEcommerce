@@ -75,22 +75,43 @@ class Pergunta(db.Model):
     id = db.Column('pergunta_id', db.Integer, primary_key=True)
     texto = db.Column('texto_pergunta', db.String(256))
     anuncio_id = db.Column('anuncio_id',db.Integer, db.ForeignKey("anuncio.anu_id"))
+    usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
 
-    def __init__ (self, texto, anuncio_id):
+    def __init__ (self, texto, anuncio_id, usuario_id):
         self.texto = texto
         self.anuncio_id = anuncio_id
+        self.usuario_id = usuario_id
 
-### RESPOSTA PERGUNTAS
+### TABELA FAVORITOS
+
+class Favorito(db.Model):
+    __tablename__ = "favorito"
+    id = db.Column('favorito_id', db.Integer, primary_key=True)
+    avaliacao = db.Column('avaliacao', db.String(150))
+    comentario = db.Column('comentario', db.String(150))
+    anuncio_id = db.Column('anuncio_id',db.Integer, db.ForeignKey("anuncio.anu_id"))
+    usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
+
+    def __init__ (self, avaliacao, comentario, anuncio_id, usuario_id):
+        self.avaliacao = avaliacao
+        self.comentario = comentario
+        self.anuncio_id = anuncio_id
+        self.usuario_id = usuario_id
+
+### TABELA RESPOSTA
 
 class Resposta(db.Model):
     __tablename__ = "resposta"
     id = db.Column('resposta_id', db.Integer, primary_key=True)
     texto = db.Column('texto_resposta', db.String(256))
     pergunta_resposta = db.Column('pergunta_resposta', db.String(256))
+    usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
 
-    def __init__ (self, texto, pergunta_resposta):
+
+    def __init__ (self, texto, pergunta_resposta, usuario_id):
         self.texto = texto
         self.pergunta_resposta = pergunta_resposta
+        self.usuario_id = usuario_id
 
 ### TABELA ANUNCIO
 
@@ -202,7 +223,7 @@ def deletarusuario(id):
 @app.route("/cad/anuncio")
 @login_required
 def anuncio():
-    return render_template('anuncio.html', anuncios = Anuncio.query.all(), categorias = Categoria.query.all(), usuarios = Usuario.query.all(), titulo="Anuncio")
+    return render_template('anuncio.html', anuncios = Anuncio.query.all(), categorias = Categoria.query.all(), usuarios = Usuario.query.all(), titulo="Anúncio")
 
 @app.route("/anuncio/criar", methods=['POST'])
 def criaranuncio():
@@ -230,7 +251,7 @@ def editaranuncio(id):
 
         return redirect(url_for("anuncio"))
     
-    return render_template("alterar_anuncio.html", anuncio = anuncio, title="Anúncio")
+    return render_template("alterar_anuncio.html", anuncio = anuncio, categorias = Categoria.query.all(), usuarios = Usuario.query.all(), title="Anúncio")
 
 
 @app.route("/anuncio/deletar/<int:id>")
@@ -244,11 +265,11 @@ def deletaranuncio(id):
 @app.route("/anuncio/pergunta")
 @login_required
 def pergunta():
-    return render_template('pergunta.html', perguntas = Pergunta.query.all(), anuncios = Anuncio.query.all(), titulo='Pergunta')
+    return render_template('pergunta.html', perguntas = Pergunta.query.all(), anuncios = Anuncio.query.all(), usuarios = Usuario.query.all(), titulo='Pergunta')
 
 @app.route("/pergunta/criar", methods=['POST'])
 def criarpergunta():
-    pergunta = Pergunta(request.form.get('texto'), request.form.get('anuncio_id'))
+    pergunta = Pergunta(request.form.get('texto'), request.form.get('anuncio_id'), request.form.get('usuario_id'))
     db.session.add(pergunta)
     db.session.commit()
     return redirect(url_for('pergunta'))
@@ -268,23 +289,24 @@ def editarpergunta(id):
 
         pergunta.texto = request.form.get("texto")
         pergunta.anuncio_id = request.form.get("anuncio_id")
+        pergunta.usuario_id = request.form.get("usuario_id")
 
         db.session.add(pergunta)
         db.session.commit()
 
         return redirect(url_for("pergunta"))
     
-    return render_template("alterar_pergunta.html", pergunta = pergunta, title="Pergunta")
+    return render_template("alterar_pergunta.html", pergunta = pergunta, anuncios = Anuncio.query.all(), usuarios = Usuario.query.all(), title="Pergunta")
 
 ### CRUD RESPOSTA 
 @app.route("/anuncio/resposta")
 @login_required
 def resposta():
-    return render_template('responder_pergunta.html', perguntas = Pergunta.query.all(), respostas = Resposta.query.all(), anuncios = Anuncio.query.all())
+    return render_template('responder_pergunta.html', perguntas = Pergunta.query.all(), respostas = Resposta.query.all(), anuncios = Anuncio.query.all(), usuarios = Usuario.query.all())
 
 @app.route("/resposta/criar", methods=['POST'])
 def criarresposta():
-    resposta = Resposta(request.form.get('pergunta_anuncio'), request.form.get('texto_resposta'))
+    resposta = Resposta(request.form.get('pergunta_anuncio'), request.form.get('texto_resposta'), request.form.get('usuario_id'))
     db.session.add(resposta)
     db.session.commit()
     return redirect(url_for('resposta'))
@@ -296,11 +318,59 @@ def deletaresposta(id):
     db.session.commit()
     return redirect(url_for("resposta"))
 
-### FAVORITOS
+@app.route("/resposta/editar/<int:id>", methods=["GET","POST"])
+def editarresposta(id):
+    resposta = Resposta.query.get(id)
+    if request.method == "POST":
+
+        resposta.pergunta_anuncio = request.form.get("pergunta_anuncio")
+        resposta.pergunta_resposta = request.form.get("texto_resposta")
+        resposta.usuario_id = request.form.get("usuario_id")
+
+        db.session.add(resposta)
+        db.session.commit()
+
+        return redirect(url_for("resposta"))
+    
+    return render_template("alterar_responder_pergunta.html", resposta = resposta, usuarios = Usuario.query.all(), anuncios = Anuncio.query.all(), perguntas = Pergunta.query.all(), title="Resposta")
+
+### CRUD FAVORITOS
 
 @app.route("/anuncio/favoritos")
+@login_required
 def favoritos():
-    return render_template("favoritos.html")
+    return render_template("favoritos.html", usuarios = Usuario.query.all(), favoritos = Favorito.query.all(), anuncios = Anuncio.query.all(),  titulo='Favoritos')
+
+@app.route("/favorito/criar", methods=['POST'])
+def criarfavorito():
+    favorito = Favorito(request.form.get('avaliacao'), request.form.get('comentario'), request.form.get('anuncio_id'), request.form.get('usuario_id'))
+    db.session.add(favorito)
+    db.session.commit()
+    return redirect(url_for('favoritos'))
+
+@app.route("/favorito/deletar/<int:id>")
+def deletarfavorito(id):
+    favorito = Favorito.query.get(id)
+    db.session.delete(favorito)
+    db.session.commit()
+    return redirect(url_for("favoritos"))
+
+@app.route("/favorito/editar/<int:id>", methods=["GET","POST"])
+def editarfavorito(id):
+    favorito = Favorito.query.get(id)
+    if request.method == "POST":
+
+        favorito.avaliacao = request.form.get("avaliacao")
+        favorito.comentario = request.form.get("comentario")
+        favorito.anuncio_id = request.form.get("anuncio_id")
+        favorito.usuario_id = request.form.get("usuario_id")
+
+        db.session.add(favorito)
+        db.session.commit()
+
+        return redirect(url_for("favoritos"))
+    
+    return render_template("alterar_favorito.html", favorito = favorito, usuarios = Usuario.query.all(), anuncios = Anuncio.query.all(), title="Favorito")
 
 ### CRUD CATEGORIA
 

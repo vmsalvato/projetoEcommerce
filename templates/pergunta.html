@@ -13,10 +13,14 @@
             <h1>Perguntas</h1>
         </div>
         <form action="/pergunta/criar" method="post">
-            <div class="form-group">
-                <label for="texto">Texto</label>
-                <input type="text" class="form-control" id="texto" name="texto" required>
-            </div>   
+            <div class="form-select">
+                <label for="usuario_id">Quem está perguntando</label>
+                <select class="form-control" id="usuario_id" name="usuario_id">
+                    {% for usuario in usuarios %} 
+                        <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>  
             <br>
             <div class="form-select">
                 <label for="anuncio_id">Anuncio</label>
@@ -28,32 +32,15 @@
             </div>
             <br>
             <div class="form-group">
+                <label for="texto">Sua pergunta</label>
+                <input type="text" class="form-control" id="texto" name="texto" required>
+            </div> 
+            <br>
+            <div class="form-group">
                 <input type="submit" class="btn btn-success" value="Cadastrar">
                 <a style="margin-left: 10px;" href={{url_for("index")}}>Voltar</a>
             </div>
         </form>
-    </div>
-    <br>
-    <div class="container">
-        <div class="page-header">
-            <h1>Lista Anúncios</h1>
-        </div>
-        <table class="table table-striped table-responsive table-bordered">
-            <thead class="thread-default">
-                <tr>
-                    <th>Nº Anúncio</th>
-                    <th>Anúncio</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for anuncio in anuncios %}
-                    <tr>
-                        <td>{{ anuncio.id }}</td>
-                        <td>{{ anuncio.nome }}</td>               
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
     <br>
     <div class="container">
@@ -63,6 +50,7 @@
         <table class="table table-striped table-responsive table-bordered">
             <thead class="thread-default">
                 <tr>
+                    <th>Usuário</th>
                     <th>Pergunta</th>
                     <th>Anúncio</th>
                     <th>Alterar</th>
@@ -72,6 +60,15 @@
             <tbody>
                 {% for pergunta in perguntas %}
                     <tr>
+                        <td>
+                            {% for usuario in usuarios %}
+                                {% if pergunta.usuario_id == usuario.id %}
+                                    {{ usuario.nome }}
+                                {% else %}
+                                    {{ null }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
                         <td>{{ pergunta.texto }}</td>
                         <td>
                         {% for anuncio in anuncios %}

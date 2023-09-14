@@ -28,12 +28,20 @@
         <input type="text" id="preco" name="preco" value="{{ anuncio.preco }}">
         <br><br>
 
-        <label for="cat">Nº Categoria</label>
-        <input type="text" id="cat" name="cat" value="{{ anuncio.cat_id }}">
+        <label for="cat">Categoria</label>
+        <select class="form-control" id="cat" name="cat">
+            {% for categoria in categorias %} 
+                <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+            {% endfor %}
+        </select>
         <br><br>
 
-        <label for="usu">Nº Usuário</label>
-        <input type="text" id="usu" name="usu" value="{{ anuncio.usu_id }}">
+        <label for="usu">Usuário</label>
+        <select class="form-control" id="usu" name="usu">
+            {% for usuario in usuarios %} 
+                <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+            {% endfor %}
+        </select>
         <br><br>
 
         <p><input type="submit" value="Alterar"></p>

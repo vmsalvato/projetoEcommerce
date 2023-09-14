@@ -12,9 +12,20 @@
         <input type="text" id="texto" name="texto" value="{{pergunta.texto}}">
         <br><br>   
 
-        <label for="anuncio_id">Nº Anúncio</label>
-        <input type="text" id="anuncio_id" name="anuncio_id" value="{{ pergunta.anuncio_id }}">
-        <br><br>  
+        <label for="anuncio_id">Anuncio</label>
+        <select class="form-control" id="anuncio_id" name="anuncio_id">
+            {% for anuncio in anuncios %} 
+                <option value="{{ anuncio.id }}">{{ anuncio.nome }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        
+        <label for="usuario_id">Quem está perguntando</label>
+        <select class="form-control" id="usuario_id" name="usuario_id">
+            {% for usuario in usuarios %} 
+                <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+            {% endfor %}
+        </select>
 
         <p><input type="submit" value="Alterar"></p>
     </form>

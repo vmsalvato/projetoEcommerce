@@ -3,9 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
     <title>seuEcommerce - Lugar de comprar barato</title>
 </head>
 <body>
-    <h1>Favoritos</h1>
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h1>{{titulo}}</h1>
+        </div>
+        <form action="/favorito/criar" method="post">
+            <div class="form-select">
+                <label for="usuario_id">Selecione o Usuário</label>
+                <select class="form-control" id="usuario_id" name="usuario_id">
+                    {% for usuario in usuarios %} 
+                        <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="form-select">
+                <label for="anuncio_id">Selecione o Anuncio</label>
+                <select class="form-control" id="anuncio_id" name="anuncio_id">
+                    {% for anuncio in anuncios %} 
+                        <option value="{{ anuncio.id }}">{{ anuncio.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="form-select">
+                <label for="avaliacao">Avalie (1 para muito ruim e 5 para muito bom)</label>
+                    <select class="form-control" id="avalicao" name="avaliacao">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+            </div>   
+            <br>
+            <div class="form-group">
+                <label for="comentario">Deixe seu comentário</label>
+                <input type="text" class="form-control" id="comentario" name="comentario" required>
+            </div> 
+            <br>
+            <div class="form-group">
+                <input type="submit" class="btn btn-success" value="Adicionar">
+                <a style="margin-left: 10px;" href={{url_for("index")}}>Voltar</a>
+            </div>
+        </form>
+    </div>
+    <br>
+    <div class="container">
+        <div class="page-header">
+            <h1>Lista de {{titulo}}</h1>
+        </div>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thread-default">
+                <tr>
+                    <th>Usuário</th>
+                    <th>Anúncio</th>
+                    <th>Avaliação</th>
+                    <th>Comentário</th>
+                    <th>Alterar</th>
+                    <th>Deletar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for favorito in favoritos %}
+                    <tr>
+                        <td>
+                            {% for usuario in usuarios %}
+                                {% if favorito.usuario_id == usuario.id %}
+                                    {{ usuario.nome }}
+                                {% else %}
+                                    {{ null }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for anuncio in anuncios %}
+                                {% if favorito.anuncio_id == anuncio.id %}
+                                    {{ anuncio.nome }}
+                                {% else %}
+                                    {{ null }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ favorito.avaliacao }}</td>
+                        <td>{{ favorito.comentario }}</td>
+                        <td><a href={{url_for("editarfavorito",id=favorito.id)}}>Alterar</a></td>
+                        <td><a href={{url_for("deletarfavorito",id=favorito.id)}}>Deletar</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
 </body>
 </html>
