@@ -45,5 +45,104 @@
     </nav>
     <br>
     <h1 style="text-align: center;">Aproveite o que há de melhor em seuEcommerce!</h1>
+    <br>
+    <h2 style="text-align: center;">Confira os anúncios em destaque</h3>
+    <br>
+    <div class="container">
+        <h3>Realize uma compra</h3>
+        <form action="/anuncio/compra" method="post">
+            <table class="table table-striped table-responsive table-bordered">
+                <thead class="thread-default">
+                    <tr>
+                        <th>Anúncio</th>
+                        <th>Quantidade</th>
+                        <th>Preço</th>
+                        <th>Usuário</th>
+                        <th>Comprar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for anuncio in anuncios %}
+                        {% if anuncio.qtd > 0 %}
+                            <tr>
+                                <td><input readonly type="text" id="anuncio_nome" name="anuncio_nome" value="{{ anuncio.nome }}"></td>
+                                <td>
+                                    <div class="form-select">
+                                        <select class="form-control" id="anuncio_qtd" name="anuncio_qtd">
+                                            {% for i in range(anuncio.qtd) %}
+                                                <option value="{{ i + 1 }}">{{ i + 1 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><input readonly type="text" id="anuncio_preco" name="anuncio_preco" value="{{ anuncio.preco }}"></td>
+                                <td>
+                                    <div class="form-select">
+                                        <select class="form-control" id="usu" name="usu">
+                                            {% for usuario in usuarios %} 
+                                                <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><input type="submit" class="btn btn-warning" value="Comprar"></td>
+                            </tr>
+                        {% else %}
+                            {{ null }}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <br>
+    <div class="container">
+        <h3>Realize uma venda</h3>
+        <form action="/anuncio/venda" method="post">
+            <table class="table table-striped table-responsive table-bordered">
+                <thead class="thread-default">
+                    <tr>
+                        <th>Anúncio</th>
+                        <th>Quantidade</th>
+                        <th>Preço</th>
+                        <th>Usuário</th>
+                        <th>Vender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for anuncio in anuncios %}
+                        {% if anuncio.qtd > 0 %}
+                            <tr>
+                                <td><input readonly type="text" id="anuncio_nome" name="anuncio_nome" value="{{ anuncio.nome }}"></td>
+                                <td>
+                                    <div class="form-select">
+                                        <select class="form-control" id="anuncio_qtd" name="anuncio_qtd">
+                                            {% for i in range(anuncio.qtd) %}
+                                                <option value="{{ i + 1 }}">{{ i + 1 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><input readonly type="text" id="anuncio_preco" name="anuncio_preco" value="{{ anuncio.preco }}"></td>
+                                <td>
+                                    <div class="form-select">
+                                        <select class="form-control" id="usu" name="usu">
+                                            {% for usuario in usuarios %} 
+                                                <option value="{{ usuario.id }}">{{ usuario.nome }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><input type="submit" class="btn btn-warning" value="Vender"></td>
+                            </tr>
+                        {% else %}
+                            {{ null }}
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 </html>

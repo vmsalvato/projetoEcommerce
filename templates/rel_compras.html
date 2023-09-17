@@ -3,9 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
     <title>seuEcommerce - Lugar de comprar barato</title>
 </head>
 <body>
-    <h1>Relatório Compras</h1>
+    <div class="container">
+        <br>
+        <div class="page-header">
+            <h1>Relatório de {{title}}</h1>
+        </div>
+        <br>
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thread-default">
+                <tr>
+                    <th>Usuário</th>
+                    <th>Anúncio</th>
+                    <th>Quantidade Comprada</th>
+                    <th>Preço Pago</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for compra in compras %}
+                    <tr>
+                        <td>
+                            {% for usuario in usuarios %} 
+                                {% if usuario.id == compra.usuario_id %}
+                                    {{ usuario.nome }}
+                                {% else %}
+                                    {{ null }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ compra.nome }}</td>
+                        <td>{{ compra.qtd }}</td>
+                        <td>{{ compra.preco }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href={{url_for("index")}}>Voltar</a>
+    </div>
 </body>
 </html>

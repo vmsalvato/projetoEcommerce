@@ -9,8 +9,7 @@ from flask import url_for
 from flask_login import (current_user, LoginManager,
                              login_user, logout_user,
                              login_required)
-import hashlib
-#from crypt import methods
+import hashlib 
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://testeuser:bancoteste2@localhost:3306/seuecommerce"
@@ -35,7 +34,7 @@ class Usuario(db.Model):
     email = db.Column('EMAIL', db.String(60))
     cpf = db.Column('CPF', db.String(11))
     sexo = db.Column('SEXO', db.String(1))
-    senha = db.Column('SENHA', db.String(60))
+    senha = db.Column('SENHA', db.String(256))
 
     def __init__(self, nome, email, cpf, sexo, senha):
         self.nome = nome
@@ -113,6 +112,40 @@ class Resposta(db.Model):
         self.pergunta_resposta = pergunta_resposta
         self.usuario_id = usuario_id
 
+### TABELA COMPRA
+
+class Compra(db.Model):
+    __tablename__ = "compra"
+    id = db.Column('compra_id', db.Integer, primary_key=True)
+    nome = db.Column('anuncio_nome', db.String(256))
+    qtd = db.Column('anuncio_qtd', db.Integer)
+    preco = db.Column('anuncio_preco', db.Float)
+    usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
+
+
+    def __init__(self, nome, qtd, preco, usuario_id):
+        self.nome = nome
+        self.qtd = qtd
+        self.preco = preco
+        self.usuario_id = usuario_id
+
+### TABELA VENDA
+
+class Venda(db.Model):
+    __tablename__ = "venda"
+    id = db.Column('venda_id', db.Integer, primary_key=True)
+    nome = db.Column('anuncio_nome', db.String(256))
+    qtd = db.Column('anuncio_qtd', db.Integer)
+    preco = db.Column('anuncio_preco', db.Float)
+    usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
+
+
+    def __init__(self, nome, qtd, preco, usuario_id):
+        self.nome = nome
+        self.qtd = qtd
+        self.preco = preco
+        self.usuario_id = usuario_id
+
 ### TABELA ANUNCIO
 
 class Anuncio(db.Model):
@@ -152,8 +185,7 @@ def load_user(id):
 def login():
     if request.method == "POST":
         email = str(request.form.get('email')).encode("utf-8")
-        senha = request.form.get("senha")
-        #senha = hashlib.sha512(str(request.form.get('senha')).encode("utf-8")).hexdigest()
+        senha = hashlib.sha256(str(request.form.get('senha')).encode("utf-8")).hexdigest() 
 
         usuario = Usuario.query.filter_by(email=email, senha=senha).first()
 
@@ -173,7 +205,8 @@ def logout():
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+    
+    return render_template("index.html", anuncios = Anuncio.query.all(), categorias = Categoria.query.all(), usuarios = Usuario.query.all())
 
 ### CRUD USUARIO
 @app.route("/log/usuario")
@@ -182,8 +215,8 @@ def logusuario():
 
 @app.route("/usuario/criar", methods=["POST"])
 def criaruser():
-    #hash = hashlib.sha512(str(request.form.get('senha')).encode("utf-8")).hexdigest()
-    usuario = Usuario(request.form.get("user"), request.form.get("email"), request.form.get("cpf"), request.form.get("sexo"), request.form.get("senha"))
+    hash = hashlib.sha256(str(request.form.get('senha')).encode("utf-8")).hexdigest()
+    usuario = Usuario(request.form.get("user"), request.form.get("email"), request.form.get("cpf"), request.form.get("sexo"), hash)
     db.session.add(usuario)
     db.session.commit()
     return redirect(url_for("logusuario"))
@@ -196,13 +229,14 @@ def buscarusuario(id):
 @app.route("/usuario/editar/<int:id>", methods=["GET","POST"])
 def editarusuario(id):
     usuario = Usuario.query.get(id)
+
     if request.method == "POST":
 
         usuario.nome = request.form.get("user")
         usuario.email = request.form.get("email")
         usuario.cpf = request.form.get("cpf")
         usuario.sexo = request.form.get("sexo")
-        usuario.senha = request.form.get("senha")#hashlib.sha512(str(request.form.get('senha')).encode("utf-8")).hexdigest()
+        usuario.senha = hashlib.sha256(str(request.form.get('senha')).encode("utf-8")).hexdigest()
 
         db.session.add(usuario)
         db.session.commit()
@@ -213,11 +247,11 @@ def editarusuario(id):
 
 @app.route("/usuario/deletar/<int:id>")
 def deletarusuario(id):
+    
     usuario = Usuario.query.get(id)
     db.session.delete(usuario)
     db.session.commit()
     return redirect(url_for("logusuario"))
-
 
 ### CRUD ANUNCIO
 @app.route("/cad/anuncio")
@@ -413,14 +447,28 @@ def editarcategoria(id):
 @app.route("/relatorios/vendas")
 @login_required
 def rel_vendas():
-    return render_template("rel_vendas.html")
+    return render_template("rel_vendas.html", vendas = Venda.query.all(), usuarios = Usuario.query.all(), title="Vendas")
+
+@app.route("/anuncio/venda", methods=["GET","POST"])
+def venda_anuncio():
+    venda = Venda(request.form.get('anuncio_nome'), request.form.get('anuncio_qtd'), request.form.get('anuncio_preco'), request.form.get('usu'))
+    db.session.add(venda)
+    db.session.commit()
+    return redirect(url_for('rel_vendas'))    
 
 ### RELATORIO COMPRAS
 
 @app.route("/relatorios/compras")
 @login_required
 def rel_compras():
-    return render_template("rel_compras.html")
+    return render_template("rel_compras.html" , compras = Compra.query.all(), usuarios = Usuario.query.all(), title='Compras')
+
+@app.route("/anuncio/compra", methods=["GET","POST"])
+def compra_anuncio():
+    compra = Compra(request.form.get('anuncio_nome'), request.form.get('anuncio_qtd'), request.form.get('anuncio_preco'), request.form.get('usu'))
+    db.session.add(compra)
+    db.session.commit()
+    return redirect(url_for('rel_compras'))
 
 if __name__ == "seuEcommerce":
     with app.app_context():

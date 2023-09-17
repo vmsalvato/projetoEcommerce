@@ -88,7 +88,7 @@
                         <td>{{ anuncio.desc }}</td>
                         <td>{{ anuncio.qtd }}</td>
                         <td>{{ anuncio.imagem }}</td>
-                        <td>{{ anuncio.preco }}</td>
+                        <td>R$ {{ anuncio.preco }}</td>
                         <td>
                         {% for categoria in categorias %} 
                             {% if categoria.id == anuncio.cat_id %}
