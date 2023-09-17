@@ -120,13 +120,14 @@ class Compra(db.Model):
     nome = db.Column('anuncio_nome', db.String(256))
     qtd = db.Column('anuncio_qtd', db.Integer)
     preco = db.Column('anuncio_preco', db.Float)
+    total = db.Column('anuncio_total', db.Float)
     usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
 
-
-    def __init__(self, nome, qtd, preco, usuario_id):
+    def __init__(self, nome, qtd, preco, total, usuario_id):
         self.nome = nome
         self.qtd = qtd
         self.preco = preco
+        self.total = total
         self.usuario_id = usuario_id
 
 ### TABELA VENDA
@@ -137,13 +138,15 @@ class Venda(db.Model):
     nome = db.Column('anuncio_nome', db.String(256))
     qtd = db.Column('anuncio_qtd', db.Integer)
     preco = db.Column('anuncio_preco', db.Float)
+    total = db.Column('anuncio_total', db.Float)
     usuario_id = db.Column('usuario_id',db.Integer, db.ForeignKey("usuario.IDUSUARIO"))
 
 
-    def __init__(self, nome, qtd, preco, usuario_id):
+    def __init__(self, nome, qtd, preco, total, usuario_id):
         self.nome = nome
         self.qtd = qtd
         self.preco = preco
+        self.total = total
         self.usuario_id = usuario_id
 
 ### TABELA ANUNCIO
@@ -447,11 +450,14 @@ def editarcategoria(id):
 @app.route("/relatorios/vendas")
 @login_required
 def rel_vendas():
-    return render_template("rel_vendas.html", vendas = Venda.query.all(), usuarios = Usuario.query.all(), title="Vendas")
+    return render_template("rel_vendas.html", anuncios = Anuncio.query.all(), vendas = Venda.query.all(), usuarios = Usuario.query.all(), title="Vendas")
 
 @app.route("/anuncio/venda", methods=["GET","POST"])
 def venda_anuncio():
-    venda = Venda(request.form.get('anuncio_nome'), request.form.get('anuncio_qtd'), request.form.get('anuncio_preco'), request.form.get('usu'))
+    preco = float(request.form.get('anuncio_preco'))
+    qtd = int(request.form.get('anuncio_qtd'))
+    calcula = preco * qtd
+    venda = Venda(request.form.get('anuncio_nome'), request.form.get('anuncio_qtd'), request.form.get('anuncio_preco'), calcula, request.form.get('usu'))
     db.session.add(venda)
     db.session.commit()
     return redirect(url_for('rel_vendas'))    
@@ -461,11 +467,14 @@ def venda_anuncio():
 @app.route("/relatorios/compras")
 @login_required
 def rel_compras():
-    return render_template("rel_compras.html" , compras = Compra.query.all(), usuarios = Usuario.query.all(), title='Compras')
+    return render_template("rel_compras.html" , anuncios = Anuncio.query.all(), compras = Compra.query.all(), usuarios = Usuario.query.all(), title='Compras')
 
 @app.route("/anuncio/compra", methods=["GET","POST"])
 def compra_anuncio():
-    compra = Compra(request.form.get('anuncio_nome'), request.form.get('anuncio_qtd'), request.form.get('anuncio_preco'), request.form.get('usu'))
+    preco = float(request.form.get('anuncio_preco'))
+    qtd = int(request.form.get('anuncio_qtd'))
+    calcula = preco * qtd
+    compra = Compra(request.form.get('anuncio_nome'), request.form.get('anuncio_qtd'), request.form.get('anuncio_preco'), calcula, request.form.get('usu'))
     db.session.add(compra)
     db.session.commit()
     return redirect(url_for('rel_compras'))

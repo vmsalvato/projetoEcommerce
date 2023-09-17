@@ -34,7 +34,7 @@
             </div>
             <br>
             <div class="form-group">
-                <label for="preco">Preço</label>
+                <label for="preco">Preço Unitário</label>
                 <input type="text" class="form-control" id="preco" name="preco" required>
             </div>
             <br>
@@ -74,7 +74,7 @@
                     <th>Descrição</th>
                     <th>Quantidade</th>
                     <th>Imagem</th>
-                    <th>Preço</th>
+                    <th>Preço Unitário</th>
                     <th>Categoria</th>
                     <th>Usuário</th>
                     <th>Editar</th>
@@ -88,7 +88,7 @@
                         <td>{{ anuncio.desc }}</td>
                         <td>{{ anuncio.qtd }}</td>
                         <td>{{ anuncio.imagem }}</td>
-                        <td>R$ {{ anuncio.preco }}</td>
+                        <td>{{ anuncio.preco }}</td>
                         <td>
                         {% for categoria in categorias %} 
                             {% if categoria.id == anuncio.cat_id %}

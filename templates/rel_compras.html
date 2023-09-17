@@ -19,7 +19,8 @@
                     <th>Usuário</th>
                     <th>Anúncio</th>
                     <th>Quantidade Comprada</th>
-                    <th>Preço Pago</th>
+                    <th>Preço Unitário de Compra</th>
+                    <th>Preço Total da Compra</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,11 +38,13 @@
                         <td>{{ compra.nome }}</td>
                         <td>{{ compra.qtd }}</td>
                         <td>{{ compra.preco }}</td>
+                        <td>{{ compra.total }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
         <a href={{url_for("index")}}>Voltar</a>
+        <br><br>
     </div>
 </body>
 </html>
